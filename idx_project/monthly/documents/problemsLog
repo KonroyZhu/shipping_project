@@ -1,0 +1,88 @@
+
+#Sunday, February 27th 2018
+
+THE VERSION ISSUE WITH TENSORFLOW:
+
+    The problem started with a missing method( tf.contrib.rnn.LSTMCell()):
+        when I was trying to run the code that I copied online on LSTM, the method was reported missing. So I
+    decided to check it on the tensorflow's document, and found it. Then I came to realize that my version
+    of tensorflow is too old that new methods are not included. I then updated my tensorflow to the latest
+    version.
+        However, when I rerun my program, another warning was raised telling me that, my version of numpy doesn't
+    match the API. According to Baidu, I updated my numpy to the latest version, but I was completely overwhelming
+    that when I check my numpy version on the Python-shell, it still displayed the old version.
+        I thought for a while and check what I've installed on my 'conda list'. what I found was that there were
+    several version of numpy that I've installed, and the old version block the new one from being called. So I
+    decided to delete it by force and deleted all the files named numpy.
+        Unfortunately, this arbitrary decision brought me to another dilemma. Among the files that named numpy,
+    there are files providing API for other packages( for example: sklearn which has dependency on numpy need an
+    API file to adapt its interface to that of numpy). So once deleted, many other packages are affected, and could
+    not run any more.
+
+        Given that many packages were affected and didn't work any more, I had no chose but install everything
+    once again:
+            Following the old routine, I created another 'envs' called 'tensorflow', and deleted the original one
+        called 'snakes'. I then install a list of packages( including: sklearn, numpy, spicy, gensim, lxml, requests
+        and finally tensorflow).
+
+        With everything done, I launched my IDE. This time, I have trouble loading the word2Vec model, note that
+    I've install python3.5.* in the new envs which is different from the former one. From Google, I knew that, the
+    problems came from the pickle module which was also a version-associated problem: as the old model was trained
+    with python3.4, it can be loaded with python3.5. So, I train the word2Vec model once again in python3.5 and loaded it successfully.
+        Differences was found in word2Vec syntax, when I run my code that the 'model.index2word' should be changed
+    into 'model.wv.index2word' so as to get the listed vocab dictionary for the model
+
+
+ISSUES WITH THE VISUALIZING TOOL TENSORBOARD:
+
+    From the tensorflow tutorial, I happened to know that, the elusive process of neural network can be visualized
+with tensorboard. It's so amazing that I couldn't help trying it:
+        According to the tutorial, I first have to declare a 'tf.Session()' in my code, store the session with  the
+     build-in function 'tf.summary.FileWriter()' and eventually run it in the command line with.
+        There was nothing wrong with my python, however, it was the command from the terminal that was the most
+     twisted part:
+            I entered the envs before typing the command, which was an inappropriate deed that got me confused. the
+         right way to launch the graphic is to enter the launching command directly without entering the envs, and
+         the logdir should be pointed to the parent directory where the graphic file was stored. After pressing enter
+         the visualized image can be seen on http://0.0.0.0:6006/#graphs
+
+
+#Thuesday, February 20
+PRINTING OUT & INITIALIZING VARIABLES:
+    When I tried out the code from the tutorial, I found it extremely hard to understand. Unlike the other
+programming language, it's not that easy to print out the variables in tensorflow:
+        Up till now, tons of printing problems still haven't been worked out. As a result I can only clarify
+     parts of the functions that I have understand now:
+                1. tf.Session():
+                    To print things out, we have to define a Session in tesnsorflow. Here are two ways of
+                   using Session():
+                            (1) sess=tf.Session() (2) with tf.Session() as sess:
+                    Then we can use print(sess.run(something)) to print it.
+
+                2. tf.global_variables_initializer()
+                     two more steps before printing is feeding values and initializing( without initializing
+                   an "Attempting to use uninitialized value Variable" error will be thrown in runtime while
+                   forgetting to feed values you will get a 'TypeError':
+                            So before printing 2 steps following are needed:
+                            (1) a=tf.Variable(somevalues,tf.int32) # here somevalues can almost everything
+                            (2) init=tf.global_variables_initializer() # for initialization
+                                sess.run(init)
+
+                3. tf.nn.embedding_lookup(embeddings, [1,3,5]):
+                       here is an example which is quite to understand:
+
+                            embeddings=np.array([[1,2],[3,4],[5,6],[7,8]])
+                            lookup=tf.nn.embedding_lookup(embeddings,[1,2])
+
+                            with tf.Session() as sess:
+                                print(sess.run(lookup))
+                        run it and check the result
+
+
+
+#Tuesday, February 27
+setting an array element with a sequence.:
+    tensorflow only accept matrix with the same length
+
+Process finished with exit code 139 (interrupted by signal 11: SIGSEGV):
+    batch_size is too large that overflow from the memory

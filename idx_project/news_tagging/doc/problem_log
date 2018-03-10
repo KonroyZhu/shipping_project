@@ -1,0 +1,13 @@
+
+
+March 6 2018
+ERROR:
+        InvalidArgumentError (see above for traceback): indices[15,14] = 703 is not in [0, 703)
+
+PROBLEM:
+        As 703 is the vocabulary size in the vocabulary dictionary, we created a word embedding randomly shaped in [vocab_size, embedding_size].
+    The problem is, however, the vocaulary[703] is not included in the embedding. Thus, as a result, the problem resemble
+    the " index out of bound".
+SOLUTION:
+        Here, we change the size of embedding with creating the embedding shaped in [vocab_size+1, embedding_size]:
+    embedding = tf.Variable(tf.random_normal([vocab_size+1, embedding_size]), dtype=tf.float32)

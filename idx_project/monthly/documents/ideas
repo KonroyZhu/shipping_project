@@ -1,0 +1,15 @@
+Reference:https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html
+There are mainly 3 steps in building the model according to the block:
+    1. word representation:
+           here we use two features to represent a word( in accordance with the block):
+                (1)W(wv):
+                    the first one is the word2vec model which represent a word with the numeric victor:
+                model.wv['散货船']=[-0.18110296 -0.15755376 ...... -0.21825495  0.13136476]
+                (2)W(chart):
+                    we run the bi-LSTM to extract the character level features:
+                    "Each character ci of a word w=[c1,…,cp] is associated to a vector ci∈Rd3.
+                We run a bi-LSTM over the sequence of character embeddings
+                and concatenate the final states to obtain a fixed-size vector Wchars∈Rd2".
+           so now we've got 2 ways of representation for one word
+           and we are going to combine(concatenate ) these 2 ways in 1:
+                W= W(wv)+W(chart)
