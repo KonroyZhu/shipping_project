@@ -28,3 +28,4 @@ model = train_w2v()
 vocab_list = model.wv.index2word
 save_vocab(vocab_list)
 model.save("../../data/processed/w2v_char")
+# print(load_char())

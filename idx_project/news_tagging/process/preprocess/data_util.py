@@ -1,3 +1,4 @@
+import jieba
 from gensim.models import Word2Vec
 import numpy as np
 import pickle
@@ -126,14 +127,86 @@ class Data_util:
         return idx_list
 
 
+class Data_util_for_words:
+    def load_word_dic(self):
+        content = open("../../data/processed/word.txt").readlines()
+        idx = 0
+        word2idx = {}
+        idx2word = {}
+        for w in content:
+            w = w.replace("\n", "")
+            word2idx[w] = idx
+            idx2word[idx] = w
+            idx += 1
+        # print(word2idx)
+        return word2idx, idx2word
+
+    def __init__(self):
+        self.word2idx, self.idx2word = self.load_word_dic()
+        self.tag2index = {"Oriented-S": 2, "Oriented-C": 3, "O": 1, "A": 0}
+        self.sentence_max_length=10
+
+    def convert(self, sentence):
+        list = []
+        for c in jieba.cut(sentence, cut_all=False):
+            list.append(self.word2idx[c])
+        return list
+
+    def convert_all(self):
+        w2v_sentence_idx_list = []
+        model = Word2Vec.load("../../data/processed/w2v_word")
+        content = open("../../data/words_tag.txt").readlines()
+        sentence_idx_list = []
+        tag_list = []
+        sentence = []
+        tags = []
+        for w in content:
+            w = w.replace("\n", "")
+            if w != "":
+                word = w.split(" ")[0]
+                tag = w.split(" ")[1]
+                try:
+                    sentence.append(self.word2idx[word])
+                    tags.append(self.tag2index[tag])
+                except:
+                    pass
+
+            else:
+                if self.tag2index["Oriented-S"] in tags or self.tag2index["Oriented-C"] in tags:
+                    if len(sentence)>self.sentence_max_length:
+                        times=int(len(sentence)/self.sentence_max_length)
+                        for i in range(times+1):
+                            # print(i)
+                            sentence_idx_list.append(sentence[:self.sentence_max_length])
+                            tag_list.append(tags[:self.sentence_max_length])
+                            sentence=sentence[self.sentence_max_length:]
+                            tags=tags[self.sentence_max_length:]
+                    else:
+                        sentence_idx_list.append(sentence)
+                        tag_list.append(tags)
+                    sentence = []
+                    tags = []
+        # print(len(sentence_idx_list[0]))
+        # print(len(tag_list[0]))
+        max_length = max(map(lambda k: len(k), sentence_idx_list))
+        for s, t in zip(sentence_idx_list, tag_list):
+            length = len(s)
+            if length < max_length:
+                less = max_length - length
+                s += [69] * less # 69 == " "
+                t += [0] * less
+            w2v_sentence_idx_list.append([model.wv[self.idx2word[c]] for c in s])
+            # print(str(type(s))+str(t))
+        return np.array(w2v_sentence_idx_list),np.array(tag_list),self.word2idx,self.tag2index,self.idx2word
 
 
 if __name__ == '__main__':
+    """
     data_util = Data_util()
     sentence="国际油轮船价普跌 国际散货船价普涨"
     sentence=data_util.convert(sentence,1)
     print(sentence)
-    """
+
     sen_list, tag_list, char2index, tag2index, index2char, index2tag = data_util.load_data(1)
     print('Starting pickle to file')
     with open("../../data/processed/data.pkl", 'wb') as f:
@@ -146,3 +219,12 @@ if __name__ == '__main__':
         pickle.dump((sen_list, tag_list, char2index, tag2index, index2char, index2tag),f)
     print("Pickle finished")
     """
+
+    data_util_for_words = Data_util_for_words()
+    x,y,word2idx,tag2index,idx2word=data_util_for_words.convert_all()
+    for(w,l) in zip(x,y):
+        print(len(w))
+        print(l)
+    # with open("../../data/processed/data_for_words.pkl", 'wb') as f:
+    #     pickle.dump((x,y,word2idx,tag2index,idx2word),f)
+    # print("Pickle finished")

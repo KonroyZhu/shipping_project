@@ -8,7 +8,7 @@ def load_data():
     words = []
     label_line=[]
     labels = []
-    with open("../../../data/OrientedTag") as f:
+    with open("../../../data/words_tag.txt") as f:
         contents = f.readlines()
         for content in contents:
             c = content.split(" ")

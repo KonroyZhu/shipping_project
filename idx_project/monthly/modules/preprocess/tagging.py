@@ -27,7 +27,7 @@ for i in range(len(sentenceSeg)):
     tagList.append("")
 
 
-with open('../../data/OrientedTag','w') as f:
+with open('../../data/words_tag.txt','w') as f:
     for item in tagList:
         print(item)
         f.write(item+"\n")

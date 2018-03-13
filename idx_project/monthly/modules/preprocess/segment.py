@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # segment for tags
     tags=load_data("tag")
     tagList=tagSegment(tags)
-    save(tagList,"tagSeg")
+    save(tagList,"tag.txt")
     '''
 
 

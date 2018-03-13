@@ -1,3 +1,4 @@
+import jieba
 from gensim.models import Word2Vec
 import numpy as np
 
@@ -97,3 +98,5 @@ class Data_util:
 # data_util = Data_util()
 # sen_list, tag_list = data_util.load_data(1)
 # print(sen_list.shape)
+
+
